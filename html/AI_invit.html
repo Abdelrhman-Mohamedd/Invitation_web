@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invitation Page</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #4b3f78;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      max-width: 1000px;
+      width: 100%;
+      padding: 30px;
+      background-color: #342c56;
+      border-radius: 10px;
+    }
+
+    .form-container {
+      width: 50%;
+      padding-right: 20px;
+    }
+
+    .form-container h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .form-container p {
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+    }
+
+    .form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .input-field {
+      padding: 10px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      outline: none;
+      width: 100%;
+    }
+
+    .submit-btn {
+      padding: 12px;
+      background-color: #7b66c6;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1.1rem;
+    }
+
+    .submit-btn:hover {
+      background-color: #6a57a5;
+    }
+
+    .image-container {
+      width: 50%;
+    }
+
+    .image-container img {
+      width: 100%;
+      border-radius: 10px;
+    }
+
+    .code {
+      font-size: 2rem;
+      font-weight: bold;
+      background-color: #7b66c6;
+      padding: 15px;
+      border-radius: 5px;
+      color: white;
+      display: inline-block;
+    }
+
+    .invitation-container {
+      width: 100%;
+      text-align: center;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container" id="form-container">
+    <div class="form-container">
+      <h1>Get Your Invitation</h1>
+      <p>Join our new exclusive course about AI and artificial-intelligence</p>
+      
+      <form class="form" id="invitationForm" onsubmit="generateCode(event)">
+        <input type="text" id="name" placeholder="Enter your name" class="input-field" required>
+        <input type="email" id="email" placeholder="Enter your email" class="input-field" required>
+        <input type="tel" id="phone" placeholder="Enter your phone number" class="input-field" required>
+        <button type="submit" class="submit-btn">Get Invitation Code</button>
+      </form>
+    </div>
+    
+    <div class="image-container">
+      <img src="https://media.istockphoto.com/id/1345991634/photo/artificial-intelligence-3d-robot-hand-finger-pointing-in-futuristic-cyber-space-metaverse.jpg?s=612x612&w=0&k=20&c=Xy_Bk8cNVi0U0EF8mXEW1_hIobDu6CU6xgb3nnkMUQw=" alt="Invitation Image">
+    </div>
+  </div>
+
+  <div class="container" id="invitation-container" style="display:none;">
+    <div class="invitation-container">
+      <h1>Your Invitation Code</h1>
+      <p>Thank you for joining! Here is your unique invitation code:</p>
+      <div class="code" id="invitationCode"></div>
+    </div>
+  </div>
+
+  <script>
+    const DISCORD_WEBHOOK_URL = "https://discordapp.com/api/webhooks/1338474081397510145/0PdiKcvL8lKUzgaWaY_ASxGZeXaZspoTXtroSVL7JHnJMMd8mr0DXkRbZ-N-RAOukYVw"; // Replace with your Discord Webhook URL
+
+    async function generateCode(event) {
+      event.preventDefault(); // Prevent form submission
+
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const randomCode = Math.floor(100000 + Math.random() * 900000);
+
+      if (!name || !email || !phone) {
+        alert("Please fill in all fields.");
+        return;
+      }
+
+      // Send data to Discord Webhook
+      const message = {
+        content: `📩 **New Form Submission**\n👤 **Name:** ${name}\n📧 **Email:** ${email}\n📱 **Phone:** ${phone}\n🎟 **Invitation Code:** ${randomCode}`
+      };
+
+      try {
+        await fetch(DISCORD_WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(message),
+        });
+
+        // Display the invitation code
+        document.getElementById('form-container').style.display = 'none';
+        document.getElementById('invitation-container').style.display = 'flex';
+        document.getElementById('invitationCode').textContent = randomCode;
+
+      } catch (error) {
+        console.error("Error sending data:", error);
+        alert("Failed to send data to Discord.");
+      }
+    }
+
+    // Retrieve and display the invitation code if available
+    const storedCode = localStorage.getItem('invitationCode');
+    if (storedCode) {
+      document.getElementById('invitationCode').textContent = storedCode;
+    }
+  </script>
+</body>
+</html>
